@@ -1,0 +1,3 @@
+[submodule "TMA-FRONTEND"]
+	path = TMA-FRONTEND
+	url = https://github.com/DRdarwin/TMA-FRONTEND
