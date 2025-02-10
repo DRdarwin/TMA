@@ -1,12 +1,6 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  ForbiddenException,
-} from "@nestjs/common";
-import { UserService } from "../services/userService";
+import { Body, Controller, ForbiddenException, Get, Param, Post } from '@nestjs/common';
+
+import { UserService } from '../services/userService';
 
 @Controller("users")
 export class UserController {

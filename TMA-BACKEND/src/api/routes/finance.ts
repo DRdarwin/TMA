@@ -1,8 +1,6 @@
-import express from "express";
-import {
-  getTransactions,
-  processTransaction,
-} from "../../controllers/financeController";
+import express from 'express';
+
+import { getTransactions, processTransaction } from '../../controllers/financeController';
 
 const router = express.Router();
 

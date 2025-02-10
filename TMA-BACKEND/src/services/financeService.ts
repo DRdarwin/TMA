@@ -1,5 +1,6 @@
-import prisma from "../api/db";
 import { PrismaClient } from '@prisma/client';
+
+import prisma from '../api/db';
 
 const prismaClient = new PrismaClient();
 

@@ -1,6 +1,7 @@
 // src/controllers/NotificationsController.ts
-import { Request, Response } from "express";
-import NotificationService from "../services/notifications";
+import { Request, Response } from 'express';
+
+import NotificationService from '../services/notifications';
 
 class NotificationsController {
   /**

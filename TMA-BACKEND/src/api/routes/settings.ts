@@ -1,8 +1,6 @@
-import express from "express";
-import {
-  getUserSettings,
-  updateUserSettings,
-} from "../../services/settingsService";
+import express from 'express';
+
+import { getUserSettings, updateUserSettings } from '../../services/settingsService';
 
 const router = express.Router();
 

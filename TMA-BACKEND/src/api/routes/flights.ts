@@ -1,10 +1,8 @@
-import express from "express";
+import express from 'express';
+
 import {
-  getFlights,
-  createFlight,
-  updateFlight,
-  deleteFlight,
-} from "../../controllers/flightController";
+    createFlight, deleteFlight, getFlights, updateFlight
+} from '../../controllers/flightController';
 
 const router = express.Router();
 
