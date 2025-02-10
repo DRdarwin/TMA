@@ -14,7 +14,8 @@ const financeService_1 = require("../services/financeService");
 // Отримати баланс користувача
 const getBalance = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const userId = parseInt(req.params.userId, 10);
+        // Тепер очікуємо, що userId передається як рядок, напр., через query параметр
+        const userId = req.query.userId;
         const balance = yield (0, financeService_1.getUserBalance)(userId);
         res.json({ balance });
     }
@@ -27,7 +28,7 @@ exports.getBalance = getBalance;
 // Отримати історію транзакцій користувача
 const getTransactions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const userId = parseInt(req.params.userId, 10);
+        const userId = req.query.userId;
         const transactions = yield (0, financeService_1.getUserTransactionHistory)(userId);
         res.json({ transactions });
     }

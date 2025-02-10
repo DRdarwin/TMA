@@ -8,14 +8,16 @@ datasource db {
 }
 
 model User {
-  id           String                @id @default(uuid())
-  telegramId   String                @unique 
+  id           String         @id @default(uuid())
+  telegramId   String         @unique 
   firstName    String?
   lastName     String?
   username     String?
-  createdAt    DateTime              @default(now()) @updatedAt
+  createdAt    DateTime       @default(now())
+  usdtBalance  Float          @default(0.0) 
   transactions FinancialTransaction[]
   notifications Notification[]
+  settings     UserSettings?  @relation("UserSettings", fields: [id], references: [userId])
 }
 
 model Flight {
@@ -24,19 +26,21 @@ model Flight {
   arrival     DateTime
   origin      String
   destination String
-  passengers  Int       @default(1) 
-  createdAt   DateTime  @default(now()) @updatedAt
+  passengers  Int       @default(1) // Ensure passengers is always at least 1 in application logic
+  createdAt   DateTime  @default(now())
 }
 
 model FinancialTransaction {
   id          String            @id @default(uuid())
   userId      String
-  type        TransactionType   @default(DEPOSIT)
+  type        TransactionType   
   amount      Float
   description String?           @default("")
-  createdAt   DateTime          @default(now()) @updatedAt
+  createdAt   DateTime          @default(now())
   
   user        User              @relation(fields: [userId], references: [id])
+
+  @@index([userId])  
 }
 
 model Notification {
@@ -46,6 +50,16 @@ model Notification {
   createdAt   DateTime @default(now())
   
   user        User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])  
+}
+
+model UserSettings {
+  userId                String  @id
+  user                  User    @relation("UserSettings", fields: [userId], references: [id])
+  language              String  @default("uk-UA")
+  notificationsEnabled  Boolean @default(true)
+  theme                 String  @default("light")
 }
 
 enum TransactionType {

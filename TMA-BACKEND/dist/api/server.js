@@ -9,7 +9,17 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const flights_1 = __importDefault(require("./routes/flights")); // ✅ Імпортуємо маршрут після express
 dotenv_1.default.config();
 const app = (0, express_1.default)(); // ✅ Спочатку оголошуємо app
-app.use((0, cors_1.default)());
+// Додаємо налаштування CORS для дозволу запитів з конкретних піддоменів
+app.use((0, cors_1.default)({
+    origin: [
+        "https://tma.specialized-air.services", // Дозволяємо фронтенду з цього піддомену
+        "https://www.tma.specialized-air.services", // Якщо є www
+        "https://be.specialized-air.services", // Якщо потрібно додати ще піддомени
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"], // Дозволяємо методи для запитів
+    allowedHeaders: ["Content-Type", "Authorization"], // Дозволяємо певні заголовки
+    credentials: true, // Дозволяємо передачу cookies, якщо потрібно
+}));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true })); // ✅ Додаємо підтримку URL-кодованих даних
 app.use("/flights", flights_1.default); // ✅ Тепер використовуємо маршрути

@@ -1,60 +1,80 @@
-import crypto from "crypto";
 import prisma from "../api/db";
+import { Flight } from "../types/flight";
 
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
-
-// Функція перевірки авторизаційних даних Telegram
-export const verifyTelegramAuth = async (data: any) => {
-  const { hash, ...userData } = data;
-
-  // 1️⃣ Створюємо перевірочний хеш
-  const secretKey = crypto
-    .createHmac("sha256", "WebAppData")
-    .update(BOT_TOKEN)
-    .digest();
-  const checkString = Object.keys(userData)
-    .sort()
-    .map((key) => `${key}=${userData[key]}`)
-    .join("\n");
-  const expectedHash = crypto
-    .createHmac("sha256", secretKey)
-    .update(checkString)
-    .digest("hex");
-
-  // 2️⃣ Перевіряємо підпис
-  if (expectedHash !== hash) {
-    throw new Error("❌ Невірний підпис даних Telegram");
+export class FlightService {
+  // Отримати всі рейси з можливістю фільтрації за датою
+  static async getFlights(date?: string): Promise<Flight[]> {
+    const flights = await prisma.flight.findMany({
+      where: date ? { departure: new Date(date) } : {},
+      orderBy: { departure: "asc" },
+    });
+    return flights.map(flight => ({
+      ...flight,
+      date: flight.departure,
+      departure: flight.departure.toISOString(),
+      arrival: flight.arrival.toISOString(),
+    }));
   }
 
-  // 3️⃣ Перевіряємо, чи користувач вже є в базі
-  let user = await prisma.user.findUnique({
-    where: { telegramId: userData.id.toString() },
-  });
+  // Отримати рейс за ID
+  static async getFlightById(flightId: string): Promise<Flight | null> {
+    const flight = await prisma.flight.findUnique({
+      where: { id: flightId },
+    });
+    if (flight) {
+      return {
+        ...flight,
+        date: flight.departure,
+        departure: flight.departure.toISOString(),
+        arrival: flight.arrival.toISOString(),
+      };
+    }
+    return null;
+  }
 
-  if (!user) {
-    // 4️⃣ Якщо користувача немає, створюємо його
-    user = await prisma.user.create({
+  // Створити новий рейс
+  static async createFlight(data: Flight): Promise<Flight> {
+    const flightData = {
+      ...data,
+      date: data.departure,
+    };
+    const createdFlight = await prisma.flight.create({
       data: {
-        telegramId: userData.id.toString(),
-        firstName: userData.first_name || null,
-        lastName: userData.last_name || null, // ✅ Додано значення після lastName:
-        username: userData.username || null, // ✅ Додано username
-        createdAt: new Date(), // ✅ Додано дату створення
+        ...flightData,
       },
     });
+    return {
+      ...createdFlight,
+      date: createdFlight.departure,
+      departure: createdFlight.departure.toISOString(),
+      arrival: createdFlight.arrival.toISOString(),
+    };
   }
 
-  return user;
-};
+  // Оновити існуючий рейс
+  static async updateFlight(flightId: string, data: Omit<Partial<Flight>, "id">): Promise<Flight> {
+    const updatedFlight = await prisma.flight.update({
+      where: { id: flightId },
+      data,
+    });
+    return {
+      ...updatedFlight,
+      date: updatedFlight.departure,
+      departure: updatedFlight.departure.toISOString(),
+      arrival: updatedFlight.arrival.toISOString(),
+    };
+  }
 
-// Ensure this file exports the getAllFlights function
-
-export const getAllFlights = async () => {
-  // Implementation of getAllFlights
-};
-
-// Ensure this file exports the addFlight function
-
-export const addFlight = async (flightData: any) => {
-  // Implementation of addFlight function
-};
+  // Видалити рейс з обробкою випадку, коли запис не знайдено
+  static async deleteFlight(flightId: string): Promise<void> {
+    const flight = await prisma.flight.findUnique({
+      where: { id: flightId },
+    });
+    if (!flight) {
+      throw new Error(`Рейс з ID ${flightId} не знайдено.`);
+    }
+    await prisma.flight.delete({
+      where: { id: flightId },
+    });
+  }
+}
