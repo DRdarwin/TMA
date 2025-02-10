@@ -1,8 +1,12 @@
-import { Router } from 'express';
-import NotificationsController from '../../controllers/NotificationsController';
+// src/routes/notifications.ts
+import { Router } from "express";
+import NotificationsController from "../../controllers/NotificationsController";
 
 const router = Router();
 
-router.post('/notifications/send', NotificationsController.send);
+// Маршрут для надсилання сповіщення
+router.post("/notifications/send", (req, res) =>
+  NotificationsController.send(req, res)
+);
 
 export default router;

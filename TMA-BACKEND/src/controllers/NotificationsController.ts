@@ -1,8 +1,12 @@
+// src/controllers/NotificationsController.ts
 import { Request, Response } from "express";
 import NotificationService from "../services/notifications";
 
 class NotificationsController {
-  send(req: Request, res: Response): void {
+  /**
+   * Обробляє POST-запит на надсилання сповіщення.
+   */
+  async send(req: Request, res: Response): Promise<void> {
     const { userId, message } = req.body;
 
     if (!userId || !message) {
@@ -10,8 +14,12 @@ class NotificationsController {
       return;
     }
 
-    NotificationService.sendNotification(userId, message);
-    res.status(200).json({ success: true, message: "Сповіщення надіслано" });
+    const result = await NotificationService.sendNotification(userId, message);
+    if (result) {
+      res.status(200).json({ success: true, message: "Сповіщення надіслано" });
+    } else {
+      res.status(500).json({ success: false, message: "Помилка надсилання сповіщення" });
+    }
   }
 }
 
