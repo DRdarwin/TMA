@@ -8,8 +8,9 @@ datasource db {
 }
 
 model User {
-  id           String         @id @default(uuid())
+  id           String         @id
   telegramId   String         @unique 
+  email        String?        @unique  // додаємо email, якщо потрібен
   firstName    String?
   lastName     String?
   username     String?
@@ -17,7 +18,7 @@ model User {
   usdtBalance  Float          @default(0.0) 
   transactions FinancialTransaction[]
   notifications Notification[]
-  settings     UserSettings?  @relation("UserSettings", fields: [id], references: [userId])
+  settings     UserSettings?  @relation("UserSettings")
 }
 
 model Flight {

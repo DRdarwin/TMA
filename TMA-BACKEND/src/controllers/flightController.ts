@@ -6,7 +6,9 @@ export class FlightController {
   static async getFlights(req: Request, res: Response): Promise<void> {
     try {
       const { date } = req.query;
-      const flights = await FlightService.getFlights(date ? date as string : undefined);
+      const flights = await FlightService.getFlights(
+        date ? (date as string) : undefined,
+      );
       res.json(flights);
     } catch (error) {
       res.status(500).json({ error: "Помилка отримання рейсів" });
@@ -42,7 +44,10 @@ export class FlightController {
   static async updateFlight(req: Request, res: Response): Promise<void> {
     try {
       const flightId = parseInt(req.params.id);
-      const flight = await FlightService.updateFlight(flightId.toString(), req.body);
+      const flight = await FlightService.updateFlight(
+        flightId.toString(),
+        req.body,
+      );
       res.json(flight);
     } catch (error) {
       res.status(500).json({ error: "Помилка оновлення рейсу" });

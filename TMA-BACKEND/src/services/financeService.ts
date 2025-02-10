@@ -1,4 +1,7 @@
 import prisma from "../api/db";
+import { PrismaClient } from '@prisma/client';
+
+const prismaClient = new PrismaClient();
 
 // Отримати баланс користувача
 export const getUserBalance = async (userId: string) => {
@@ -14,9 +17,9 @@ export const getUserBalance = async (userId: string) => {
 
 // Отримати історію транзакцій користувача
 export const getUserTransactionHistory = async (userId: string) => {
-  return await prisma.userTransaction.findMany({
+  return await prisma.financialTransaction.findMany({
     where: { userId },
-    orderBy: { date: "desc" },
+    orderBy: { createdAt: "desc" },
   });
 };
 
@@ -32,7 +35,7 @@ export const makeUserTransaction = async (
   }
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user || user.usdtBalance === undefined) {
+  if (!user?.usdtBalance) {
     throw new Error("Користувача не знайдено або баланс не визначено");
   }
 
@@ -48,13 +51,43 @@ export const makeUserTransaction = async (
     data: { usdtBalance: newBalance },
   });
 
-  return await prisma.userTransaction.create({
+  const transactionType = type === "deposit" ? "DEPOSIT" : "WITHDRAWAL";
+
+  return await prisma.financialTransaction.create({
     data: {
       userId,
+      type: transactionType, // обов’язкове поле
       amount: type === "withdraw" ? -amount : amount,
-      currency: "USDT",
-      date: new Date(),
       description,
+      createdAt: new Date(),
     },
   });
 };
+
+async function performTransaction() {
+  const result = await prismaClient.$transaction(async (prisma) => {
+    // Ваши операции внутри транзакции
+    const user = await prisma.user.create({
+      data: {
+        id: 'some-unique-id', // Provide a unique ID or let Prisma auto-generate it
+        usdtBalance: 0, // Set initial balance or any other required fields
+        telegramId: 'some-telegram-id', // Provide a valid telegramId
+        // Add other required fields here
+      },
+    });
+
+    const transaction = await prisma.financialTransaction.create({
+      data: {
+        amount: 100,
+        userId: user.id,
+        type: "DEPOSIT", // обов’язкове поле
+      },
+    });
+
+    return { user, transaction };
+  });
+
+  return result;
+}
+
+export { performTransaction };

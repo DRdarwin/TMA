@@ -22,29 +22,33 @@ export interface UserSettings {
 }
 
 // Отримати (або створити) налаштування користувача
-export const getUserSettings = async (userId: number): Promise<UserSettings> => {
-  const settings = await prisma.userSettings.findUnique({
-    where: { userId: userId.toString() },
-  }) ?? await prisma.userSettings.create({
-    data: {
-      userId: userId.toString(),
-      notificationsEnabled: true,
-      theme: Theme.Light,
-    },
-  });
+export const getUserSettings = async (
+  userId: number,
+): Promise<UserSettings> => {
+  const settings =
+    (await prisma.userSettings.findUnique({
+      where: { userId: userId.toString() },
+    })) ??
+    (await prisma.userSettings.create({
+      data: {
+        userId: userId.toString(),
+        notificationsEnabled: true,
+        theme: Theme.Light,
+      },
+    }));
 
-  return { 
+  return {
     userId: Number(settings.userId),
     language: settings.language as Language,
     notificationsEnabled: settings.notificationsEnabled,
-    theme: settings.theme as Theme
+    theme: settings.theme as Theme,
   };
 };
 
 // Оновити або створити налаштування користувача
 export const updateUserSettings = async (
   userId: number,
-    update: Omit<UserSettings, 'userId'>,
+  update: Omit<UserSettings, "userId">,
 ): Promise<UserSettings> => {
   const settingsData = {
     ...update,

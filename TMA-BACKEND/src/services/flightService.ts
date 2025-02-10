@@ -8,7 +8,7 @@ export class FlightService {
       where: date ? { departure: new Date(date) } : {},
       orderBy: { departure: "asc" },
     });
-    return flights.map(flight => ({
+    return flights.map((flight) => ({
       ...flight,
       date: flight.departure,
       departure: flight.departure.toISOString(),
@@ -52,7 +52,10 @@ export class FlightService {
   }
 
   // Оновити існуючий рейс
-  static async updateFlight(flightId: string, data: Omit<Partial<Flight>, "id">): Promise<Flight> {
+  static async updateFlight(
+    flightId: string,
+    data: Omit<Partial<Flight>, "id">,
+  ): Promise<Flight> {
     const updatedFlight = await prisma.flight.update({
       where: { id: flightId },
       data,

@@ -9,56 +9,92 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteFlight = exports.updateFlight = exports.createFlight = exports.getFlights = void 0;
+exports.deleteFlight = exports.updateFlight = exports.createFlight = exports.getFlights = exports.FlightController = void 0;
 const flightService_1 = require("../services/flightService");
+class FlightController {
+    // Отримати всі рейси
+    static getFlights(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { date } = req.query;
+                const flights = yield flightService_1.FlightService.getFlights(date ? date : undefined);
+                res.json(flights);
+            }
+            catch (error) {
+                res.status(500).json({ error: "Помилка отримання рейсів" });
+            }
+        });
+    }
+    // Отримати рейс за ID
+    static getFlightById(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const flightId = parseInt(req.params.id);
+                const flight = yield flightService_1.FlightService.getFlightById(flightId.toString());
+                if (!flight) {
+                    res.status(404).json({ error: "Рейс не знайдено" });
+                    return;
+                }
+                res.json(flight);
+            }
+            catch (error) {
+                res.status(500).json({ error: "Помилка отримання рейсу" });
+            }
+        });
+    }
+    // Створити новий рейс
+    static createFlight(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const flight = yield flightService_1.FlightService.createFlight(req.body);
+                res.status(201).json(flight);
+            }
+            catch (error) {
+                res.status(500).json({ error: "Помилка створення рейсу" });
+            }
+        });
+    }
+    // Оновити рейс
+    static updateFlight(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const flightId = parseInt(req.params.id);
+                const flight = yield flightService_1.FlightService.updateFlight(flightId.toString(), req.body);
+                res.json(flight);
+            }
+            catch (error) {
+                res.status(500).json({ error: "Помилка оновлення рейсу" });
+            }
+        });
+    }
+    // Видалити рейс
+    static deleteFlight(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const flightId = parseInt(req.params.id);
+                yield flightService_1.FlightService.deleteFlight(flightId.toString());
+                res.status(204).send();
+            }
+            catch (error) {
+                res.status(500).json({ error: "Помилка видалення рейсу" });
+            }
+        });
+    }
+}
+exports.FlightController = FlightController;
 const getFlights = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const flights = yield (0, flightService_1.getAllFlights)();
-        console.log("✅ Рейси з бази:", flights);
-        res.json(flights);
-    }
-    catch (error) {
-        console.error("❌ Помилка в `getFlights`:", error);
-        res.status(500).json({ error: "Не вдалося отримати рейси" });
-    }
+    // implementation
 });
 exports.getFlights = getFlights;
-// Створити новий рейс
 const createFlight = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const flight = yield (0, flightService_1.addFlight)(req.body);
-        res.status(201).json(flight);
-    }
-    catch (error) {
-        res.status(500).json({ error: "Не вдалося створити рейс" });
-    }
+    // implementation
 });
 exports.createFlight = createFlight;
-// Оновити рейс
 const updateFlight = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const flight = yield modifyFlight(req.params.id, req.body);
-        res.json(flight);
-    }
-    catch (error) {
-        res.status(500).json({ error: "Не вдалося оновити рейс" });
-    }
+    // implementation
 });
 exports.updateFlight = updateFlight;
-// Видалити рейс
 const deleteFlight = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        yield removeFlight(req.params.id);
-        res.json({ message: "Рейс видалено" });
-    }
-    catch (error) {
-        res.status(500).json({ error: "Не вдалося видалити рейс" });
-    }
+    // implementation
 });
 exports.deleteFlight = deleteFlight;
-function modifyFlight(id, body) {
-    throw new Error("Function not implemented.");
-}
-function removeFlight(id) {
-    throw new Error("Function not implemented.");
-}

@@ -8,71 +8,68 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addFlight = exports.getAllFlights = exports.verifyTelegramAuth = void 0;
-const crypto_1 = __importDefault(require("crypto"));
+exports.FlightService = void 0;
 const db_1 = __importDefault(require("../api/db"));
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
-// Функція перевірки авторизаційних даних Telegram
-const verifyTelegramAuth = (data) => __awaiter(void 0, void 0, void 0, function* () {
-    const { hash } = data, userData = __rest(data, ["hash"]);
-    // 1️⃣ Створюємо перевірочний хеш
-    const secretKey = crypto_1.default
-        .createHmac("sha256", "WebAppData")
-        .update(BOT_TOKEN)
-        .digest();
-    const checkString = Object.keys(userData)
-        .sort()
-        .map((key) => `${key}=${userData[key]}`)
-        .join("\n");
-    const expectedHash = crypto_1.default
-        .createHmac("sha256", secretKey)
-        .update(checkString)
-        .digest("hex");
-    // 2️⃣ Перевіряємо підпис
-    if (expectedHash !== hash) {
-        throw new Error("❌ Невірний підпис даних Telegram");
-    }
-    // 3️⃣ Перевіряємо, чи користувач вже є в базі
-    let user = yield db_1.default.user.findUnique({
-        where: { telegramId: userData.id.toString() },
-    });
-    if (!user) {
-        // 4️⃣ Якщо користувача немає, створюємо його
-        user = yield db_1.default.user.create({
-            data: {
-                telegramId: userData.id.toString(),
-                firstName: userData.first_name || null,
-                lastName: userData.last_name || null, // ✅ Додано значення після lastName:
-                username: userData.username || null, // ✅ Додано username
-                createdAt: new Date(), // ✅ Додано дату створення
-            },
+class FlightService {
+    // Отримати всі рейси з можливістю фільтрації за датою
+    static getFlights(date) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const flights = yield db_1.default.flight.findMany({
+                where: date ? { departure: new Date(date) } : {},
+                orderBy: { departure: "asc" },
+            });
+            return flights.map((flight) => (Object.assign(Object.assign({}, flight), { date: flight.departure, departure: flight.departure.toISOString(), arrival: flight.arrival.toISOString() })));
         });
     }
-    return user;
-});
-exports.verifyTelegramAuth = verifyTelegramAuth;
-// Ensure this file exports the getAllFlights function
-const getAllFlights = () => __awaiter(void 0, void 0, void 0, function* () {
-    // Implementation of getAllFlights
-});
-exports.getAllFlights = getAllFlights;
-// Ensure this file exports the addFlight function
-const addFlight = (flightData) => __awaiter(void 0, void 0, void 0, function* () {
-    // Implementation of addFlight function
-});
-exports.addFlight = addFlight;
+    // Отримати рейс за ID
+    static getFlightById(flightId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const flight = yield db_1.default.flight.findUnique({
+                where: { id: flightId },
+            });
+            if (flight) {
+                return Object.assign(Object.assign({}, flight), { date: flight.departure, departure: flight.departure.toISOString(), arrival: flight.arrival.toISOString() });
+            }
+            return null;
+        });
+    }
+    // Створити новий рейс
+    static createFlight(data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const flightData = Object.assign(Object.assign({}, data), { date: data.departure });
+            const createdFlight = yield db_1.default.flight.create({
+                data: Object.assign({}, flightData),
+            });
+            return Object.assign(Object.assign({}, createdFlight), { date: createdFlight.departure, departure: createdFlight.departure.toISOString(), arrival: createdFlight.arrival.toISOString() });
+        });
+    }
+    // Оновити існуючий рейс
+    static updateFlight(flightId, data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const updatedFlight = yield db_1.default.flight.update({
+                where: { id: flightId },
+                data,
+            });
+            return Object.assign(Object.assign({}, updatedFlight), { date: updatedFlight.departure, departure: updatedFlight.departure.toISOString(), arrival: updatedFlight.arrival.toISOString() });
+        });
+    }
+    // Видалити рейс з обробкою випадку, коли запис не знайдено
+    static deleteFlight(flightId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const flight = yield db_1.default.flight.findUnique({
+                where: { id: flightId },
+            });
+            if (!flight) {
+                throw new Error(`Рейс з ID ${flightId} не знайдено.`);
+            }
+            yield db_1.default.flight.delete({
+                where: { id: flightId },
+            });
+        });
+    }
+}
+exports.FlightService = FlightService;
