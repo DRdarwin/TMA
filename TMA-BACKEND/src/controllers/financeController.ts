@@ -1,13 +1,14 @@
 import { Request, Response } from 'express';
-
 import {
-    getUserBalance, getUserTransactionHistory, makeUserTransaction
+  getUserBalance,
+  getUserTransactionHistory,
+  makeUserTransaction,
 } from '../services/financeService';
 
 // Отримати баланс користувача
 export const getBalance = async (req: Request, res: Response) => {
   try {
-    // Тепер очікуємо, що userId передається як рядок, напр., через query параметр
+    // Очікуємо, що userId передається як рядок, наприклад, через query параметр
     const userId = req.query.userId as string;
     const balance = await getUserBalance(userId);
     res.json({ balance });
@@ -29,15 +30,17 @@ export const getTransactions = async (req: Request, res: Response) => {
   }
 };
 
-// Виконати фінансову операцію (наприклад, поповнення або зняття коштів)
+// Виконати фінансову операцію
 export const processTransaction = async (req: Request, res: Response) => {
   try {
-    const { userId, amount, type, description } = req.body;
+    // Очікуємо body містить: userId, amount, type, description, а можливо й blockchainTxHash
+    const { userId, amount, type, description, blockchainTxHash } = req.body;
     const transaction = await makeUserTransaction(
       userId,
       amount,
       type,
       description,
+      blockchainTxHash,
     );
     res.status(201).json(transaction);
   } catch (error) {

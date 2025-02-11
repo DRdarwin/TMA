@@ -1,8 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
 import prisma from '../api/db';
-
-const prismaClient = new PrismaClient();
 
 // Отримати баланс користувача
 export const getUserBalance = async (userId: string) => {
@@ -25,18 +21,20 @@ export const getUserTransactionHistory = async (userId: string) => {
 };
 
 // Виконати транзакцію (поповнення або списання коштів)
+// Додаємо додаткове поле blockchainTxHash, якщо воно є
 export const makeUserTransaction = async (
   userId: string,
   amount: number,
   type: "deposit" | "withdraw",
   description?: string,
+  blockchainTxHash?: string, // нове поле для збереження on-chain даних
 ) => {
   if (amount <= 0) {
     throw new Error("Сума транзакції повинна бути більше нуля");
   }
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user?.usdtBalance) {
+  if (!user || user.usdtBalance === null || user.usdtBalance === undefined) {
     throw new Error("Користувача не знайдено або баланс не визначено");
   }
 
@@ -57,23 +55,23 @@ export const makeUserTransaction = async (
   return await prisma.financialTransaction.create({
     data: {
       userId,
-      type: transactionType, // обов’язкове поле
+      type: transactionType,
       amount: type === "withdraw" ? -amount : amount,
       description,
+      blockchainTxHash, // збережемо хеш транзакції, якщо є
       createdAt: new Date(),
     },
   });
 };
 
-async function performTransaction() {
-  const result = await prismaClient.$transaction(async (prisma) => {
-    // Ваши операции внутри транзакции
+// Функція performTransaction залишається прикладом (не використовується в продакшені)
+export async function performTransaction() {
+  const result = await prisma.$transaction(async (prisma) => {
     const user = await prisma.user.create({
       data: {
-        id: 'some-unique-id', // Provide a unique ID or let Prisma auto-generate it
-        usdtBalance: 0, // Set initial balance or any other required fields
-        telegramId: 'some-telegram-id', // Provide a valid telegramId
-        // Add other required fields here
+        id: 'some-unique-id', 
+        usdtBalance: 0,
+        telegramId: 'some-telegram-id',
       },
     });
 
@@ -81,7 +79,7 @@ async function performTransaction() {
       data: {
         amount: 100,
         userId: user.id,
-        type: "DEPOSIT", // обов’язкове поле
+        type: "DEPOSIT",
       },
     });
 
@@ -90,5 +88,3 @@ async function performTransaction() {
 
   return result;
 }
-
-export { performTransaction };

@@ -32,14 +32,15 @@ model Flight {
 }
 
 model FinancialTransaction {
-  id          String            @id @default(uuid())
-  userId      String
-  type        TransactionType   
-  amount      Float
-  description String?           @default("")
-  createdAt   DateTime          @default(now())
-  
-  user        User              @relation(fields: [userId], references: [id])
+  id                String            @id @default(uuid())
+  userId            String
+  type              TransactionType   
+  amount            Float
+  description       String?           @default("")
+  blockchainTxHash  String?           // додане поле для збереження blockchain хешу
+  createdAt         DateTime          @default(now())
+
+  user              User              @relation(fields: [userId], references: [id])
 
   @@index([userId])  
 }
