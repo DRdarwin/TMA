@@ -1,13 +1,14 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const flightController_1 = require("../../controllers/flightController");
-const router = express_1.default.Router();
-router.get("/", flightController_1.getFlights); // Отримати всі рейси
-router.post("/", flightController_1.createFlight); // Створити новий рейс
-router.put("/:id", flightController_1.updateFlight); // Оновити рейс
-router.delete("/:id", flightController_1.deleteFlight); // Видалити рейс
-exports.default = router;
+import express from "express";
+import logger from "../../utils/logger.js"; // Скоригуй шлях, якщо потрібно
+import { createFlight, deleteFlight, getFlights, updateFlight, } from "../../controllers/flightController.js";
+const router = express.Router();
+// Middleware для логування кожного запиту до цього роутера
+router.use((req, res, next) => {
+    logger.info(`Роутер /api/flights отримав запит: ${req.method} ${req.originalUrl}`);
+    next();
+});
+router.get("/", getFlights); // Отримати всі рейси
+router.post("/", createFlight); // Створити новий рейс
+router.put("/:id", updateFlight); // Оновити рейс
+router.delete("/:id", deleteFlight); // Видалити рейс
+export default router;

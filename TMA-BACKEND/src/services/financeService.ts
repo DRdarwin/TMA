@@ -1,90 +1,95 @@
-import prisma from "../api/db";
+import prisma from "../api/db.js";
+import logger from "../utils/logger.js";
+import TronWeb from "tronweb";
 
-// Отримати баланс користувача
+// Оновлено тип транзакції: тепер лише верхній регістр
+type TransactionType = "DEPOSIT" | "WITHDRAWAL";
+
+// Створюємо екземпляр TronWeb із використанням API-ключа з оточення
+const tronWeb = new TronWeb({
+  fullHost: "https://api.trongrid.io",
+  headers: { "TRON-PRO-API-KEY": process.env.TRON_API_KEY || "" },
+});
+
 export const getUserBalance = async (userId: string) => {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { usdtBalance: true },
-  });
-  if (!user) {
-    throw new Error("Користувача не знайдено");
+  try {
+    logger.info(`Отримання балансу для userId: ${userId}`);
+    // Переконайся, що в моделі User у Prisma є поле walletAddress (тип String)
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { walletAddress: true }, // Якщо цього поля немає, додай його до Prisma-схеми або змінити цей select
+    });
+    if (!user) throw new Error("Користувача не знайдено");
+
+    const usdtContract = await tronWeb
+      .contract()
+      .at(process.env.USDT_CONTRACT_ADDRESS!);
+    const balanceRaw = await usdtContract.balanceOf(user.walletAddress).call();
+    const balance = parseFloat(balanceRaw) / 1e6;
+    logger.info(`Баланс для userId ${userId}: ${balance} USDT`);
+    return balance;
+  } catch (error: any) {
+    logger.error(`Помилка отримання балансу: ${error.message}`);
+    throw error;
   }
-  return user.usdtBalance;
 };
 
-// Отримати історію транзакцій користувача
-export const getUserTransactionHistory = async (userId: string) => {
-  return await prisma.financialTransaction.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-  });
-};
-
-// Виконати транзакцію (поповнення або списання коштів)
-// Додаємо додаткове поле blockchainTxHash, якщо воно є
 export const makeUserTransaction = async (
   userId: string,
+  recipient: string,
   amount: number,
-  type: "deposit" | "withdraw",
-  description?: string,
-  blockchainTxHash?: string, // нове поле для збереження on-chain даних
+  type: TransactionType,
 ) => {
-  if (amount <= 0) {
-    throw new Error("Сума транзакції повинна бути більше нуля");
+  try {
+    logger.info(
+      `Обробка транзакції для userId: ${userId}, тип: ${type}, сума: ${amount} USDT`,
+    );
+    if (amount <= 0)
+      throw new Error("Сума транзакції повинна бути більше нуля");
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { walletAddress: true },
+    });
+    if (!user) throw new Error("Користувача не знайдено");
+
+    const usdtContract = await tronWeb
+      .contract()
+      .at(process.env.USDT_CONTRACT_ADDRESS!);
+    const amountInSun = amount * 1e6;
+    const transaction = await usdtContract
+      .transfer(recipient, amountInSun)
+      .send();
+
+    // Використовуємо значення типу відповідно до нашого TransactionType
+    await prisma.financialTransaction.create({
+      data: {
+        userId,
+        type: type, // type має бути "DEPOSIT" або "WITHDRAWAL" відповідно до Prisma enum
+        amount: type === "WITHDRAWAL" ? -amount : amount,
+        blockchainTxHash: transaction,
+        createdAt: new Date(),
+      },
+    });
+    logger.info(`Транзакція виконана успішно: ${transaction}`);
+    return transaction;
+  } catch (error: any) {
+    logger.error(`Помилка виконання транзакції: ${error.message}`);
+    throw error;
   }
-
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user || user.usdtBalance === null || user.usdtBalance === undefined) {
-    throw new Error("Користувача не знайдено або баланс не визначено");
-  }
-
-  if (type === "withdraw" && user.usdtBalance < amount) {
-    throw new Error("Недостатньо коштів на балансі");
-  }
-
-  const newBalance =
-    type === "deposit" ? user.usdtBalance + amount : user.usdtBalance - amount;
-
-  await prisma.user.update({
-    where: { id: userId },
-    data: { usdtBalance: newBalance },
-  });
-
-  const transactionType = type === "deposit" ? "DEPOSIT" : "WITHDRAWAL";
-
-  return await prisma.financialTransaction.create({
-    data: {
-      userId,
-      type: transactionType,
-      amount: type === "withdraw" ? -amount : amount,
-      description,
-      blockchainTxHash, // збережемо хеш транзакції, якщо є
-      createdAt: new Date(),
-    },
-  });
 };
 
-// Функція performTransaction залишається прикладом (не використовується в продакшені)
-export async function performTransaction() {
-  const result = await prisma.$transaction(async (prisma) => {
-    const user = await prisma.user.create({
-      data: {
-        id: "some-unique-id",
-        usdtBalance: 0,
-        telegramId: "some-telegram-id",
-      },
+export const getUserTransactionHistory = async (userId: string) => {
+  try {
+    logger.info(`Отримання історії транзакцій для userId: ${userId}`);
+    const transactions = await prisma.financialTransaction.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
     });
-
-    const transaction = await prisma.financialTransaction.create({
-      data: {
-        amount: 100,
-        userId: user.id,
-        type: "DEPOSIT",
-      },
-    });
-
-    return { user, transaction };
-  });
-
-  return result;
-}
+    logger.info(`Отримано ${transactions.length} транзакцій`);
+    return transactions;
+  } catch (error: any) {
+    logger.error(`Помилка отримання історії транзакцій: ${error.message}`);
+    throw error;
+  }
+};

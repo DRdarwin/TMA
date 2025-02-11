@@ -1,4 +1,3 @@
-"use strict";
 // src/services/NotificationService.ts
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -9,7 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 class NotificationService {
     /**
      * Надсилає сповіщення користувачу.
@@ -36,4 +34,4 @@ class NotificationService {
         });
     }
 }
-exports.default = new NotificationService();
+export default new NotificationService();

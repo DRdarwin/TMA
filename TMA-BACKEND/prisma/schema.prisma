@@ -8,17 +8,18 @@ datasource db {
 }
 
 model User {
-  id           String         @id
-  telegramId   String         @unique 
-  email        String?        @unique  // додаємо email, якщо потрібен
-  firstName    String?
-  lastName     String?
-  username     String?
-  createdAt    DateTime       @default(now())
-  usdtBalance  Float          @default(0.0) 
-  transactions FinancialTransaction[]
+  id            String   @id @default(uuid())
+  telegramId    String
+  email         String?  @unique
+  firstName     String?
+  lastName      String?
+  username      String?
+  createdAt     DateTime @default(now())
+  usdtBalance   Float    @default(0)
+  walletAddress String   // Add this line
+  transactions  FinancialTransaction[]
   notifications Notification[]
-  settings     UserSettings?  @relation("UserSettings")
+  settings      UserSettings?  @relation("UserSettings")
 }
 
 model Flight {

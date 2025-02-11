@@ -3,7 +3,7 @@ import express from "express";
 import {
   getUserSettings,
   updateUserSettings,
-} from "../../services/settingsService";
+} from "../../services/settingsService.js";
 
 const router = express.Router();
 

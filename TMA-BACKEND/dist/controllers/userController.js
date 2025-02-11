@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -20,10 +19,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserController = void 0;
-const common_1 = require("@nestjs/common");
-const userService_1 = require("../services/userService");
+import { Body, Controller, ForbiddenException, Get, Param, Post, } from "@nestjs/common";
+import { UserService } from "../services/userService.js";
 let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
@@ -32,7 +29,7 @@ let UserController = class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.userService.findUserByTelegramId(telegramId);
             if (!user) {
-                throw new common_1.ForbiddenException("User not allowed");
+                throw new ForbiddenException("User not allowed");
             }
             return user;
         });
@@ -43,25 +40,25 @@ let UserController = class UserController {
         });
     }
 };
-exports.UserController = UserController;
 __decorate([
-    (0, common_1.Get)(":telegramId"),
-    __param(0, (0, common_1.Param)("telegramId")),
+    Get(":telegramId"),
+    __param(0, Param("telegramId")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getUser", null);
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)("telegramId")),
-    __param(1, (0, common_1.Body)("firstName")),
-    __param(2, (0, common_1.Body)("lastName")),
-    __param(3, (0, common_1.Body)("username")),
+    Post(),
+    __param(0, Body("telegramId")),
+    __param(1, Body("firstName")),
+    __param(2, Body("lastName")),
+    __param(3, Body("username")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "registerUser", null);
-exports.UserController = UserController = __decorate([
-    (0, common_1.Controller)("users"),
-    __metadata("design:paramtypes", [userService_1.UserService])
+UserController = __decorate([
+    Controller("users"),
+    __metadata("design:paramtypes", [UserService])
 ], UserController);
+export { UserController };

@@ -1,4 +1,4 @@
-import prisma from "../api/db";
+import prisma from "../api/db.js";
 
 // Перелік можливих мов інтерфейсу
 export enum Language {

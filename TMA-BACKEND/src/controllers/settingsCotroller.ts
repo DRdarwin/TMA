@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import {
   getUserSettings,
   updateUserSettings,
-} from "../services/settingsService";
+} from "../services/settingsService.js";
 
 // Отримати налаштування користувача
 export const getSettings = async (req: Request, res: Response) => {
