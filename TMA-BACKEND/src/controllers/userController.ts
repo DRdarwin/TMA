@@ -14,7 +14,8 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get(":telegramId")
-  async getUser(@Param("telegramId") telegramId: string) {
+  async getUser(req: unknown, res: unknown, @Param("telegramId")
+telegramId: string) {
     const user = await this.userService.findUserByTelegramId(telegramId);
     if (!user) {
       throw new ForbiddenException("User not allowed");
@@ -30,6 +31,21 @@ export class UserController {
     @Body("username") username?: string,
   ) {
     return this.userService.createUser(
+      telegramId,
+      firstName,
+      lastName,
+      username,
+    );
+  }
+
+  @Post("update")
+  async updateUser(
+    @Body("telegramId") telegramId: string,
+    @Body("firstName") firstName?: string,
+    @Body("lastName") lastName?: string,
+    @Body("username") username?: string,
+  ) {
+    return this.userService.updateUser(
       telegramId,
       firstName,
       lastName,
