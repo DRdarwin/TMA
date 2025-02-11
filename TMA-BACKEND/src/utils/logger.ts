@@ -1,5 +1,5 @@
-import path from 'path';
-import { createLogger, format, transports } from 'winston';
+import path from "path";
+import { createLogger, format, transports } from "winston";
 
 const allowedLogLevels = [
   "error",
@@ -22,7 +22,7 @@ const logger = createLogger({
     format.printf(({ timestamp, level, message }) => {
       const processId = process.pid;
       return `[${timestamp}] [PID:${processId}] ${level.toUpperCase()}: ${message}`;
-    })
+    }),
   ),
   transports: [
     new transports.Console({

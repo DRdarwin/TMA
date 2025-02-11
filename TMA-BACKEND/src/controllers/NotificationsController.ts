@@ -1,7 +1,7 @@
 // src/controllers/NotificationsController.ts
-import { Request, Response } from 'express';
+import { Request, Response } from "express";
 
-import NotificationService from '../services/notifications';
+import NotificationService from "../services/notifications";
 
 class NotificationsController {
   /**
@@ -19,7 +19,9 @@ class NotificationsController {
     if (result) {
       res.status(200).json({ success: true, message: "Сповіщення надіслано" });
     } else {
-      res.status(500).json({ success: false, message: "Помилка надсилання сповіщення" });
+      res
+        .status(500)
+        .json({ success: false, message: "Помилка надсилання сповіщення" });
     }
   }
 }

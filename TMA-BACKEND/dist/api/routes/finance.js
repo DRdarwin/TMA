@@ -15,17 +15,29 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const financeController_1 = require("../../controllers/financeController");
 const router = express_1.default.Router();
+// Отримати баланс користувача (новий endpoint, якщо потрібно)
+router.get("/balance", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Передбачаємо, що userId передається як рядок
+        yield (0, financeController_1.getBalance)(req, res);
+    }
+    catch (error) {
+        console.error("❌ Помилка отримання балансу:", error);
+        res.status(500).json({ error: "Не вдалося отримати баланс." });
+    }
+}));
+// Отримати історію транзакцій користувача
 router.get("/transactions", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const userId = parseInt(req.query.userId);
-        const transactions = yield (0, financeController_1.getTransactions)(req, res);
-        res.json(transactions);
+        // Викликаємо контролер, який сам обробляє відповідь
+        yield (0, financeController_1.getTransactions)(req, res);
     }
     catch (error) {
         console.error("❌ Помилка отримання транзакцій:", error);
         res.status(500).json({ error: "Не вдалося отримати транзакції." });
     }
 }));
+// Обробка транзакції
 router.post("/transactions", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield (0, financeController_1.processTransaction)(req, res);

@@ -1,6 +1,9 @@
-import { Request, Response } from 'express';
+import { Request, Response } from "express";
 
-import { getUserSettings, updateUserSettings } from '../services/settingsService';
+import {
+  getUserSettings,
+  updateUserSettings,
+} from "../services/settingsService";
 
 // Отримати налаштування користувача
 export const getSettings = async (req: Request, res: Response) => {

@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -7,6 +7,7 @@ async function main() {
   const [user1, user2, user3, user4, user5] = await Promise.all([
     prisma.user.create({
       data: {
+        id: "1",
         telegramId: "100001",
         firstName: "Олег",
         lastName: "Бойко",
@@ -15,6 +16,7 @@ async function main() {
     }),
     prisma.user.create({
       data: {
+        id: "2",
         telegramId: "100002",
         firstName: "Марія",
         lastName: "Коваль",
@@ -23,6 +25,7 @@ async function main() {
     }),
     prisma.user.create({
       data: {
+        id: "3",
         telegramId: "100003",
         firstName: "Сергій",
         lastName: "Дорошенко",
@@ -31,6 +34,7 @@ async function main() {
     }),
     prisma.user.create({
       data: {
+        id: "4",
         telegramId: "100004",
         firstName: "Анна",
         lastName: "Степанова",
@@ -39,6 +43,7 @@ async function main() {
     }),
     prisma.user.create({
       data: {
+        id: "5",
         telegramId: "100005",
         firstName: "Дмитро",
         lastName: "Лисенко",

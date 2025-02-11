@@ -1,4 +1,4 @@
-import prisma from '../api/db';
+import prisma from "../api/db";
 
 // Отримати баланс користувача
 export const getUserBalance = async (userId: string) => {
@@ -69,9 +69,9 @@ export async function performTransaction() {
   const result = await prisma.$transaction(async (prisma) => {
     const user = await prisma.user.create({
       data: {
-        id: 'some-unique-id', 
+        id: "some-unique-id",
         usdtBalance: 0,
-        telegramId: 'some-telegram-id',
+        telegramId: "some-telegram-id",
       },
     });
 

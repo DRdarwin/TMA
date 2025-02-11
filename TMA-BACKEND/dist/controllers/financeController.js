@@ -14,7 +14,7 @@ const financeService_1 = require("../services/financeService");
 // Отримати баланс користувача
 const getBalance = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Тепер очікуємо, що userId передається як рядок, напр., через query параметр
+        // Очікуємо, що userId передається як рядок, наприклад, через query параметр
         const userId = req.query.userId;
         const balance = yield (0, financeService_1.getUserBalance)(userId);
         res.json({ balance });
@@ -38,11 +38,12 @@ const getTransactions = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.getTransactions = getTransactions;
-// Виконати фінансову операцію (наприклад, поповнення або зняття коштів)
+// Виконати фінансову операцію
 const processTransaction = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { userId, amount, type, description } = req.body;
-        const transaction = yield (0, financeService_1.makeUserTransaction)(userId, amount, type, description);
+        // Очікуємо body містить: userId, amount, type, description, а можливо й blockchainTxHash
+        const { userId, amount, type, description, blockchainTxHash } = req.body;
+        const transaction = yield (0, financeService_1.makeUserTransaction)(userId, amount, type, description, blockchainTxHash);
         res.status(201).json(transaction);
     }
     catch (error) {

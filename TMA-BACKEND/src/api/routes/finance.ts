@@ -1,5 +1,9 @@
-import express from 'express';
-import { getTransactions, processTransaction, getBalance } from '../../controllers/financeController';
+import express from "express";
+import {
+  getTransactions,
+  processTransaction,
+  getBalance,
+} from "../../controllers/financeController";
 
 const router = express.Router();
 

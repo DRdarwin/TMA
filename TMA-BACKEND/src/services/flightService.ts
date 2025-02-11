@@ -1,5 +1,5 @@
-import prisma from '../api/db';
-import { Flight } from '../types/flight';
+import prisma from "../api/db";
+import { Flight } from "../types/flight";
 
 export class FlightService {
   // Отримати всі рейси з можливістю фільтрації за датою

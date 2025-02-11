@@ -35,7 +35,7 @@ let UserService = class UserService {
             return this.prisma.user.upsert({
                 where: { telegramId },
                 update: {},
-                create: { telegramId, firstName, lastName, username },
+                create: { id: telegramId, telegramId, firstName, lastName, username },
             });
         });
     }

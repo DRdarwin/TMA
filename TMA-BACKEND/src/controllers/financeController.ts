@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
+import { Request, Response } from "express";
 import {
   getUserBalance,
   getUserTransactionHistory,
   makeUserTransaction,
-} from '../services/financeService';
+} from "../services/financeService";
 
 // Отримати баланс користувача
 export const getBalance = async (req: Request, res: Response) => {

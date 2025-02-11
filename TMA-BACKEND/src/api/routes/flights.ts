@@ -1,8 +1,11 @@
-import express from 'express';
+import express from "express";
 
 import {
-    createFlight, deleteFlight, getFlights, updateFlight
-} from '../../controllers/flightController';
+  createFlight,
+  deleteFlight,
+  getFlights,
+  updateFlight,
+} from "../../controllers/flightController";
 
 const router = express.Router();
 

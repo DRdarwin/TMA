@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makeUserTransaction = exports.getUserTransactionHistory = exports.getUserBalance = void 0;
+exports.performTransaction = performTransaction;
 const db_1 = __importDefault(require("../api/db"));
 // Отримати баланс користувача
 const getUserBalance = (userId) => __awaiter(void 0, void 0, void 0, function* () {
@@ -28,19 +29,20 @@ const getUserBalance = (userId) => __awaiter(void 0, void 0, void 0, function* (
 exports.getUserBalance = getUserBalance;
 // Отримати історію транзакцій користувача
 const getUserTransactionHistory = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield db_1.default.userTransaction.findMany({
+    return yield db_1.default.financialTransaction.findMany({
         where: { userId },
-        orderBy: { date: "desc" },
+        orderBy: { createdAt: "desc" },
     });
 });
 exports.getUserTransactionHistory = getUserTransactionHistory;
 // Виконати транзакцію (поповнення або списання коштів)
-const makeUserTransaction = (userId, amount, type, description) => __awaiter(void 0, void 0, void 0, function* () {
+// Додаємо додаткове поле blockchainTxHash, якщо воно є
+const makeUserTransaction = (userId, amount, type, description, blockchainTxHash) => __awaiter(void 0, void 0, void 0, function* () {
     if (amount <= 0) {
         throw new Error("Сума транзакції повинна бути більше нуля");
     }
     const user = yield db_1.default.user.findUnique({ where: { id: userId } });
-    if (!user || user.usdtBalance === undefined) {
+    if (!user || user.usdtBalance === null || user.usdtBalance === undefined) {
         throw new Error("Користувача не знайдено або баланс не визначено");
     }
     if (type === "withdraw" && user.usdtBalance < amount) {
@@ -51,14 +53,39 @@ const makeUserTransaction = (userId, amount, type, description) => __awaiter(voi
         where: { id: userId },
         data: { usdtBalance: newBalance },
     });
-    return yield db_1.default.userTransaction.create({
+    const transactionType = type === "deposit" ? "DEPOSIT" : "WITHDRAWAL";
+    return yield db_1.default.financialTransaction.create({
         data: {
             userId,
+            type: transactionType,
             amount: type === "withdraw" ? -amount : amount,
-            currency: "USDT",
-            date: new Date(),
             description,
+            blockchainTxHash, // збережемо хеш транзакції, якщо є
+            createdAt: new Date(),
         },
     });
 });
 exports.makeUserTransaction = makeUserTransaction;
+// Функція performTransaction залишається прикладом (не використовується в продакшені)
+function performTransaction() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const result = yield db_1.default.$transaction((prisma) => __awaiter(this, void 0, void 0, function* () {
+            const user = yield prisma.user.create({
+                data: {
+                    id: "some-unique-id",
+                    usdtBalance: 0,
+                    telegramId: "some-telegram-id",
+                },
+            });
+            const transaction = yield prisma.financialTransaction.create({
+                data: {
+                    amount: 100,
+                    userId: user.id,
+                    type: "DEPOSIT",
+                },
+            });
+            return { user, transaction };
+        }));
+        return result;
+    });
+}

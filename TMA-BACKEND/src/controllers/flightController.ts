@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
+import { Request, Response } from "express";
 
-import { FlightService } from '../services/flightService';
+import { FlightService } from "../services/flightService";
 
 export class FlightController {
   // Отримати всі рейси
