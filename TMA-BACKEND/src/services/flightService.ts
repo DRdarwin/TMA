@@ -1,6 +1,6 @@
-import prisma from "../api/db.js";
-import { Flight } from "../types/flight.js";
-import logger from "../utils/logger.js"; // Скоригуй шлях, якщо потрібно
+import prisma from '../api/db.js';
+import { Flight } from '../types/flight.js';
+import logger from '../utils/logger.js'; // Скоригуй шлях, якщо потрібно
 
 export class FlightService {
   // Отримати всі рейси з можливістю фільтрації за датою

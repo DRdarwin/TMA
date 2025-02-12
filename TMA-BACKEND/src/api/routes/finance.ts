@@ -1,10 +1,10 @@
-import express from "express";
+import express from 'express';
+
 import {
-  getBalance,
-  processTransaction,
-  getTransactions,
-} from "../../controllers/financeController.js";
-import logger from "../../utils/logger.js"; // Скоригуй шлях, якщо потрібно
+    getBalance, getTransactions, processTransaction
+} from '../../controllers/financeController.js';
+import logger from '../../utils/logger.js'; // Скоригуй шлях, якщо потрібно
+
 const router = express.Router();
 
 // Middleware логування запитів для фінансових маршрутів

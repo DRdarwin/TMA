@@ -24,15 +24,17 @@ let UserService = class UserService {
     }
     findUserByTelegramId(telegramId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.prisma.user.findUnique({ where: { telegramId } });
+            return this.prisma.user.findFirst({ where: { telegramId } });
         });
     }
     createUser(telegramId, firstName, lastName, username) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.prisma.user.upsert({
-                where: { telegramId },
-                update: {},
-                create: { id: telegramId, telegramId, firstName, lastName, username },
+            const existingUser = yield this.findUserByTelegramId(telegramId);
+            if (existingUser) {
+                return existingUser;
+            }
+            return this.prisma.user.create({
+                data: { telegramId, firstName, lastName, username, walletAddress: '' },
             });
         });
     }
@@ -40,6 +42,38 @@ let UserService = class UserService {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.findUserByTelegramId(telegramId);
             return user !== null; // Пускаємо тільки зареєстрованих користувачів
+        });
+    }
+    updateUserWalletAddress(telegramId, walletAddress) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.findUserByTelegramId(telegramId);
+            if (!user) {
+                throw new Error("User not found");
+            }
+            return this.prisma.user.update({
+                where: { id: user.id },
+                data: { walletAddress },
+            });
+        });
+    }
+    updateUser(telegramId, firstName, lastName, username) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.findUserByTelegramId(telegramId);
+            if (!user) {
+                throw new Error("User not found");
+            }
+            user.firstName = firstName !== null && firstName !== void 0 ? firstName : user.firstName;
+            user.lastName = lastName !== null && lastName !== void 0 ? lastName : user.lastName;
+            user.username = username !== null && username !== void 0 ? username : user.username;
+            return this.saveUser(user);
+        });
+    }
+    saveUser(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.prisma.user.update({
+                where: { id: user.id },
+                data: user,
+            });
         });
     }
 };

@@ -1,13 +1,16 @@
-import cors, { CorsOptions, CorsOptionsDelegate } from "cors";
-import express, { Request } from "express";
-import dotenv from "dotenv";
-import flightRoutes from "./routes/flights.js";
-import logger from "../utils/logger.js"; // скоригуй шлях
+import cors, { CorsOptions, CorsOptionsDelegate } from 'cors';
+import dotenv from 'dotenv';
+import express, { Request } from 'express';
+
+import logger from '../utils/logger.js';
+import flightRoutes from './routes/flights.js';
+import routeRoutes from './routes/routes.js'; // скоригуй шлях
+
 logger.info("Сервер запущено!");
 dotenv.config();
 
 const app = express();
-
+const ROUTE_PREFIX = '/api/routes';
 const allowedOrigins = [
   "https://tma.specialized-air.services",
   "https://www.tma.specialized-air.services",
@@ -37,6 +40,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/flights", flightRoutes);
+app.use(ROUTE_PREFIX, routeRoutes);
 
 const PORT = process.env.PORT || 5000;
 

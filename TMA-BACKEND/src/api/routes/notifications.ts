@@ -1,7 +1,7 @@
 // src/routes/notifications.ts
-import { Router } from "express";
+import { Router } from 'express';
 
-import NotificationsController from "../../controllers/NotificationsController.js";
+import NotificationsController from '../../controllers/NotificationsController.js';
 
 const router = Router();
 

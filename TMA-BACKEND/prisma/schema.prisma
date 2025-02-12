@@ -16,7 +16,7 @@ model User {
   username      String?
   createdAt     DateTime @default(now())
   usdtBalance   Float    @default(0)
-  walletAddress String   // Add this line
+  walletAddress String?
   transactions  FinancialTransaction[]
   notifications Notification[]
   settings      UserSettings?  @relation("UserSettings")
@@ -28,20 +28,20 @@ model Flight {
   arrival     DateTime
   origin      String
   destination String
-  passengers  Int       @default(1) // Ensure passengers is always at least 1 in application logic
+  passengers  Int       @default(1)
   createdAt   DateTime  @default(now())
 }
 
 model FinancialTransaction {
-  id                String            @id @default(uuid())
+  id                String           @id @default(uuid())
   userId            String
   type              TransactionType   
   amount            Float
-  description       String?           @default("")
-  blockchainTxHash  String?           // додане поле для збереження blockchain хешу
-  createdAt         DateTime          @default(now())
+  description       String?          @default("")
+  blockchainTxHash  String?
+  createdAt         DateTime         @default(now())
 
-  user              User              @relation(fields: [userId], references: [id])
+  user              User             @relation(fields: [userId], references: [id])
 
   @@index([userId])  
 }
@@ -70,4 +70,13 @@ enum TransactionType {
   WITHDRAWAL
   PAYMENT
   TRANSFER
+}
+
+model Route {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  waypoints   Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

@@ -1,12 +1,9 @@
-import express from "express";
-import logger from "../../utils/logger.js"; // Скоригуй шлях, якщо потрібно
+import express from 'express';
 
 import {
-  createFlight,
-  deleteFlight,
-  getFlights,
-  updateFlight,
-} from "../../controllers/flightController.js";
+    createFlight, deleteFlight, getFlights, updateFlight
+} from '../../controllers/flightController.js';
+import logger from '../../utils/logger.js'; // Скоригуй шлях, якщо потрібно
 
 const router = express.Router();
 

@@ -25,7 +25,7 @@ let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
     }
-    getUser(telegramId) {
+    getUser(req, res, telegramId) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.userService.findUserByTelegramId(telegramId);
             if (!user) {
@@ -39,12 +39,17 @@ let UserController = class UserController {
             return this.userService.createUser(telegramId, firstName, lastName, username);
         });
     }
+    updateUser(telegramId, firstName, lastName, username) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.userService.updateUser(telegramId, firstName, lastName, username);
+        });
+    }
 };
 __decorate([
     Get(":telegramId"),
-    __param(0, Param("telegramId")),
+    __param(2, Param("telegramId")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, Object, String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getUser", null);
 __decorate([
@@ -57,6 +62,16 @@ __decorate([
     __metadata("design:paramtypes", [String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "registerUser", null);
+__decorate([
+    Post("update"),
+    __param(0, Body("telegramId")),
+    __param(1, Body("firstName")),
+    __param(2, Body("lastName")),
+    __param(3, Body("username")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "updateUser", null);
 UserController = __decorate([
     Controller("users"),
     __metadata("design:paramtypes", [UserService])
