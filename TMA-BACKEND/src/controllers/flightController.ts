@@ -1,7 +1,6 @@
-import { Request, Response } from 'express';
-
-import { FlightService } from '../services/flightService.js';
-import logger from '../utils/logger.js'; // скоригуй шлях відповідно до структури проекту
+import { Request, Response } from "express";
+import { FlightService } from "../services/flightService.js";
+import logger from "../utils/logger.js"; // скоригуй шлях відповідно до структури проекту
 
 export class FlightController {
   // Отримати всі рейси

@@ -1,11 +1,17 @@
-import { Router } from 'express';
-import { UserController } from '../../controllers/userController.js';
-import { UserService } from '../../services/userService.js';
-import { prisma } from '../../prisma/prisma.service.js'; // Обновленный путь импорта
+import { Router } from "express";
+import { UserController } from "../../controllers/userController.js";
+import { UserService } from "../../services/userService.js";
+import { prisma } from "../../prisma/prisma.service.js"; // Обновленный путь импорта
 const router = Router();
 // Используем PrismaService при создании UserService
 const userController = new UserController(new UserService(prisma));
-router.get('/:telegramId', (req, res) => userController.getUser(req, res, req.params.telegramId));
-router.post('/', (req, res) => userController.registerUser(req, res, req.body.telegramId));
-router.post('/update', (req, res) => userController.updateUser(req, res, req.body));
+router.get("/:telegramId", (req, res) =>
+  userController.getUser(req, res, req.params.telegramId),
+);
+router.post("/", (req, res) =>
+  userController.registerUser(req, res, req.body.telegramId),
+);
+router.post("/update", (req, res) =>
+  userController.updateUser(req, res, req.body),
+);
 export default router;

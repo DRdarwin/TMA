@@ -14,7 +14,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { Injectable } from "@nestjs/common";
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 export const prisma = new PrismaClient();
 let PrismaService = class PrismaService extends PrismaClient {
     onModuleInit() {

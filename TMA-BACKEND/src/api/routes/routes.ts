@@ -1,15 +1,13 @@
 import { Router } from 'express';
+import { RoutesController } from '../../controllers/routesController.js';
 
-import { RouteController } from '../../controllers/routeController.js';
-import asyncHandler from 'express-async-handler';
+const routes = Router();
+const controller = new RoutesController();
 
-const router = Router();
-const controller = new RouteController();
+routes.post('/', (req, res) => controller.createRoute(req, res));
+routes.get('/', (req, res) => controller.getRoutes(req, res));
+routes.get('/:id', (req, res) => controller.getRouteById(req, res));
+routes.put('/:id', (req, res) => controller.updateRoute(req, res));
+routes.delete('/:id', (req, res) => controller.deleteRoute(req, res));
 
-router.post('/routes', asyncHandler(async (req, res) => { await controller.createRoute(req, res); }));
-router.get('/routes', asyncHandler(async (req, res) => await controller.getRoutes(req, res)));
-router.get('/routes/:id', asyncHandler(async (req, res) => await controller.getRouteById(req, res)));
-router.put('/routes/:id', asyncHandler(async (req, res) => await controller.updateRoute(req, res)));
-router.delete('/routes/:id', asyncHandler(async (req, res) => await controller.deleteRoute(req, res)));
-
-export default router;
+export default routes;

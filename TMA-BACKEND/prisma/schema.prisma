@@ -79,4 +79,6 @@ model Route {
   waypoints   Json
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@map("routes")  // Примусове ім'я таблиці в БД у множині
 }

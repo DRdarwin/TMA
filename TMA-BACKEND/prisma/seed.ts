@@ -1,13 +1,29 @@
 import { PrismaClient } from "@prisma/client";
+import process from "process";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // Створюємо 5 користувачів
+  // Очистка таблицы User перед заполнением
+  await prisma.user.deleteMany();
+
+  // Пример создания пользователя без явного указания id
+  await prisma.user.create({
+    data: {
+      telegramId: "123456",
+      email: "example@example.com",
+      firstName: "John",
+      lastName: "Doe",
+      username: "johndoe",
+      // walletAddress можно не указывать,
+      // id будет сгенерирован автоматически
+    },
+  });
+
+  // Створюємо 5 користувачів без явного вказання id (буде згенеровано автоматично)
   const [user1, user2, user3, user4, user5] = await Promise.all([
     prisma.user.create({
       data: {
-        id: "1",
         telegramId: "100001",
         firstName: "Олег",
         lastName: "Бойко",
@@ -16,7 +32,6 @@ async function main() {
     }),
     prisma.user.create({
       data: {
-        id: "2",
         telegramId: "100002",
         firstName: "Марія",
         lastName: "Коваль",
@@ -25,7 +40,6 @@ async function main() {
     }),
     prisma.user.create({
       data: {
-        id: "3",
         telegramId: "100003",
         firstName: "Сергій",
         lastName: "Дорошенко",
@@ -34,7 +48,6 @@ async function main() {
     }),
     prisma.user.create({
       data: {
-        id: "4",
         telegramId: "100004",
         firstName: "Анна",
         lastName: "Степанова",
@@ -43,7 +56,6 @@ async function main() {
     }),
     prisma.user.create({
       data: {
-        id: "5",
         telegramId: "100005",
         firstName: "Дмитро",
         lastName: "Лисенко",
@@ -197,6 +209,36 @@ async function main() {
         origin: "Rome",
         destination: "Munich",
         passengers: 111,
+      },
+    ],
+  });
+
+  // Добавляем примеры створення маршрутів
+  await prisma.route.createMany({
+    data: [
+      {
+        name: "Маршрут 1",
+        description: "Київ – Львів",
+        waypoints: JSON.stringify([
+          { latitude: 50.4501, longitude: 30.5234, name: "Київ" },
+          { latitude: 49.8397, longitude: 24.0297, name: "Львів" },
+        ]),
+      },
+      {
+        name: "Маршрут 2",
+        description: "Одеса – Харків",
+        waypoints: JSON.stringify([
+          { latitude: 46.4825, longitude: 30.7233, name: "Одеса" },
+          { latitude: 50.0043, longitude: 36.2319, name: "Харків" },
+        ]),
+      },
+      {
+        name: "Маршрут 3",
+        description: "Київ – Варшава",
+        waypoints: JSON.stringify([
+          { latitude: 50.4501, longitude: 30.5234, name: "Київ" },
+          { latitude: 52.2297, longitude: 21.0122, name: "Варшава" },
+        ]),
       },
     ],
   });
@@ -427,12 +469,15 @@ async function main() {
     ],
   });
 
-  console.log("✅ Створено 5 користувачів, 20 рейсів та 30 транзакцій!");
+  console.log(
+    "✅ Створено 5 користувачів, 20 рейсів, 3 маршрутів та 30 транзакцій!",
+  );
 }
 
 main()
   .catch((error) => {
     console.error("❌ Помилка заповнення бази даних:", error);
+    process.exit(1);
   })
   .finally(async () => {
     await prisma.$disconnect();

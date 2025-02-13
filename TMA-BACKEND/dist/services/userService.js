@@ -34,7 +34,7 @@ let UserService = class UserService {
                 return existingUser;
             }
             return this.prisma.user.create({
-                data: { telegramId, firstName, lastName, username, walletAddress: '' },
+                data: { telegramId, firstName, lastName, username, walletAddress: "" },
             });
         });
     }

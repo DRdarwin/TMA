@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { getUserBalance, makeUserTransaction, getUserTransactionHistory } from "../services/financeService.js";
+import { getUserBalance, getUserTransactionHistory, makeUserTransaction, } from "../services/financeService.js";
 import logger from "../utils/logger.js";
 export class FinanceController {
     // Отримати баланс користувача
@@ -21,7 +21,9 @@ export class FinanceController {
             }
             catch (error) {
                 logger.error(`Помилка API отримання балансу: ${error.message}`);
-                res.status(500).json({ error: "Не вдалося отримати баланс користувача." });
+                res
+                    .status(500)
+                    .json({ error: "Не вдалося отримати баланс користувача." });
             }
         });
     }
@@ -51,7 +53,9 @@ export class FinanceController {
             }
             catch (error) {
                 logger.error(`Помилка API отримання історії транзакцій: ${error.message}`);
-                res.status(500).json({ error: "Не вдалося отримати історію транзакцій." });
+                res
+                    .status(500)
+                    .json({ error: "Не вдалося отримати історію транзакцій." });
             }
         });
     }

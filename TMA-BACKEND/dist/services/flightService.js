@@ -23,7 +23,7 @@ export class FlightService {
                 return flights.map((flight) => (Object.assign(Object.assign({}, flight), { date: flight.departure, departure: flight.departure.toISOString(), arrival: flight.arrival.toISOString() })));
             }
             catch (error) {
-                logger.error(`FlightService.getFlights помилка: ${error.message}`);
+                logger.error(`FlightService.getFlights помилка: ${error instanceof Error ? error.message : String(error)}`);
                 throw error;
             }
         });
@@ -44,7 +44,7 @@ export class FlightService {
                 return null;
             }
             catch (error) {
-                logger.error(`FlightService.getFlightById помилка: ${error.message}`);
+                logger.error(`FlightService.getFlightById помилка: ${error instanceof Error ? error.message : String(error)}`);
                 throw error;
             }
         });
@@ -62,7 +62,7 @@ export class FlightService {
                 return Object.assign(Object.assign({}, createdFlight), { date: createdFlight.departure, departure: createdFlight.departure.toISOString(), arrival: createdFlight.arrival.toISOString() });
             }
             catch (error) {
-                logger.error(`FlightService.createFlight помилка: ${error.message}`);
+                logger.error(`FlightService.createFlight помилка: ${error instanceof Error ? error.message : String(error)}`);
                 throw error;
             }
         });
@@ -80,7 +80,7 @@ export class FlightService {
                 return Object.assign(Object.assign({}, updatedFlight), { date: updatedFlight.departure, departure: updatedFlight.departure.toISOString(), arrival: updatedFlight.arrival.toISOString() });
             }
             catch (error) {
-                logger.error(`FlightService.updateFlight помилка: ${error.message}`);
+                logger.error(`FlightService.updateFlight помилка: ${error instanceof Error ? error.message : String(error)}`);
                 throw error;
             }
         });
@@ -103,7 +103,7 @@ export class FlightService {
                 logger.info(`FlightService.deleteFlight: рейс з ID ${flightId} видалено`);
             }
             catch (error) {
-                logger.error(`FlightService.deleteFlight помилка: ${error.message}`);
+                logger.error(`FlightService.deleteFlight помилка: ${error instanceof Error ? error.message : String(error)}`);
                 throw error;
             }
         });

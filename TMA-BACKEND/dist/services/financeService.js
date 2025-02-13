@@ -7,9 +7,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+/* eslint-disable no-undef */
+/// <reference types="node" />
+import TronWeb from "tronweb";
 import prisma from "../api/db.js";
 import logger from "../utils/logger.js";
-import TronWeb from "tronweb";
 const tronWeb = new TronWeb({
     fullHost: "https://api.trongrid.io",
     headers: { "TRON-PRO-API-KEY": process.env.TRON_API_KEY || "" },
@@ -26,15 +28,25 @@ export class FinanceService {
                 });
                 if (!user)
                     throw new Error("Користувача не знайдено");
-                const usdtContract = yield tronWeb.contract().at(process.env.USDT_CONTRACT_ADDRESS);
-                const balanceRaw = yield usdtContract.balanceOf(user.walletAddress).call();
+                const usdtContract = yield tronWeb
+                    .contract()
+                    .at(process.env.USDT_CONTRACT_ADDRESS);
+                const balanceRaw = yield usdtContract
+                    .balanceOf(user.walletAddress)
+                    .call();
                 const balance = parseFloat(balanceRaw) / 1e6;
                 logger.info(`Баланс для userId ${userId}: ${balance} USDT`);
                 return balance;
             }
             catch (error) {
-                logger.error(`Помилка отримання балансу: ${error.message}`);
-                throw error;
+                if (error instanceof Error) {
+                    logger.error(`Помилка отримання балансу: ${error.message}`);
+                    throw error;
+                }
+                else {
+                    logger.error(`Помилка отримання балансу: ${error}`);
+                    throw new Error("Невідома помилка");
+                }
             }
         });
     }
@@ -51,9 +63,13 @@ export class FinanceService {
                 });
                 if (!user)
                     throw new Error("Користувача не знайдено");
-                const usdtContract = yield tronWeb.contract().at(process.env.USDT_CONTRACT_ADDRESS);
+                const usdtContract = yield tronWeb
+                    .contract()
+                    .at(process.env.USDT_CONTRACT_ADDRESS);
                 const amountInSun = amount * 1e6;
-                const transaction = yield usdtContract.transfer(recipient, amountInSun).send();
+                const transaction = yield usdtContract
+                    .transfer(recipient, amountInSun)
+                    .send();
                 yield prisma.financialTransaction.create({
                     data: {
                         userId,
@@ -67,8 +83,14 @@ export class FinanceService {
                 return transaction;
             }
             catch (error) {
-                logger.error(`Помилка виконання транзакції: ${error.message}`);
-                throw error;
+                if (error instanceof Error) {
+                    logger.error(`Помилка виконання транзакції: ${error.message}`);
+                    throw error;
+                }
+                else {
+                    logger.error(`Помилка виконання транзакції: ${error}`);
+                    throw new Error("Невідома помилка");
+                }
             }
         });
     }
@@ -85,8 +107,14 @@ export class FinanceService {
                 return transactions;
             }
             catch (error) {
-                logger.error(`Помилка отримання історії транзакцій: ${error.message}`);
-                throw error;
+                if (error instanceof Error) {
+                    logger.error(`Помилка отримання історії транзакцій: ${error.message}`);
+                    throw error;
+                }
+                else {
+                    logger.error(`Помилка отримання історії транзакцій: ${error}`);
+                    throw new Error("Невідома помилка");
+                }
             }
         });
     }

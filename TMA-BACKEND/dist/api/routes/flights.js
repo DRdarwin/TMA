@@ -1,6 +1,6 @@
 import express from "express";
-import logger from "../../utils/logger.js"; // Скоригуй шлях, якщо потрібно
 import { createFlight, deleteFlight, getFlights, updateFlight, } from "../../controllers/flightController.js";
+import logger from "../../utils/logger.js"; // Скоригуй шлях, якщо потрібно
 const router = express.Router();
 // Middleware для логування кожного запиту до цього роутера
 router.use((req, res, next) => {

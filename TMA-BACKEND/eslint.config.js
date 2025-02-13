@@ -1,21 +1,25 @@
-import { ESLint } from "eslint";
+import globals from "globals";
+import pluginJs from "@eslint/js";
+import tseslint from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
+import pluginReact from "eslint-plugin-react";
 
-export default new ESLint({
-  baseConfig: {
-    env: {
-      browser: true,
-      es2021: true,
-      node: true,
+/** @type {import('eslint').Linter.FlatConfig[]} */
+export default [
+  {
+    files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
+    languageOptions: {
+      parser: tsParser,
+      globals: globals.browser,
     },
-    extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
-    parser: "@typescript-eslint/parser",
-    parserOptions: {
-      ecmaVersion: 12,
-      sourceType: "module",
+    plugins: {
+      "@typescript-eslint": tseslint,
+      react: pluginReact,
     },
-    plugins: ["@typescript-eslint"],
     rules: {
-      // Add your custom rules here
+      ...pluginJs.configs.recommended.rules,
+      ...tseslint.configs.recommended.rules,
+      ...pluginReact.configs.flat.recommended.rules,
     },
   },
-});
+];
