@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { RouteController } from '../../controllers/routeController.ts';
+import { RoutesController } from '../controllers/routesController.js';
 import asyncHandler from 'express-async-handler';
 
 const router = Router();
-const controller = new RouteController();
+const controller = new RoutesController();
 
 router.post('/routes', asyncHandler((req, res) => controller.createRoute(req, res)));
 router.get('/routes', asyncHandler((req, res) => controller.getRoutes(req, res)));

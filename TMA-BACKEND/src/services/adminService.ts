@@ -1,26 +1,106 @@
 // src/services/adminService.ts
-import { prisma } from '../prisma/prisma.service';
+import { prisma } from '../prisma/prisma.service.js';
+import { UnauthorizedError } from '../errors/unauthorized.error';
 
-export const getFlights = async () => {
-    return await prisma.flight.findMany();
+const checkAdmin = async (adminId: string) => {
+  const admin = await prisma.admin.findUnique({ where: { id: adminId } });
+  if (!admin) {
+    throw new UnauthorizedError('Access denied: Admin privileges required');
+  }
 };
 
-export const createFlight = async (data: any) => {
-    return await prisma.flight.create({ data });
+export const getFlights = async (adminId: string) => {
+  await checkAdmin(adminId);
+  return await prisma.flight.findMany();
 };
 
-export const updateFlight = async (id: string, data: any) => {
-    return await prisma.flight.update({ where: { id }, data });
+export const createFlight = async (adminId: string, data: any) => {
+  await checkAdmin(adminId);
+  return await prisma.flight.create({ data });
 };
 
-export const deleteFlight = async (id: string) => {
-    return await prisma.flight.delete({ where: { id } });
+export const updateFlight = async (adminId: string, id: string, data: any) => {
+  await checkAdmin(adminId);
+  return await prisma.flight.update({
+    where: { id },
+    data,
+  });
 };
 
-export const getWallets = async () => {
-    return await prisma.wallet.findMany();
+export const deleteFlight = async (adminId: string, id: string) => {
+  await checkAdmin(adminId);
+  return await prisma.flight.delete({
+    where: { id },
+  });
 };
 
-export const updateWallet = async (id: string, data: any) => {
-    return await prisma.wallet.update({ where: { id }, data });
+export const getWallets = async (adminId: string) => {
+  await checkAdmin(adminId);
+  try {
+    return await prisma.user.findMany({
+      select: {
+        id: true,
+        telegramId: true,
+        username: true,
+        usdtBalance: true,
+        walletAddress: true,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching wallets:', error);
+    throw new Error('Failed to fetch wallets');
+  }
+};
+
+export const updateWallet = async (adminId: string, id: string, data: any) => {
+  await checkAdmin(adminId);
+  try {
+    return await prisma.user.update({
+      where: { id },
+      data,
+    });
+  } catch (error) {
+    console.error(`Error updating wallet with id ${id}:`, error);
+    throw new Error(`Failed to update wallet with id ${id}`);
+  }
+};
+
+export const getAllUsers = async (adminId: string) => {
+  await checkAdmin(adminId);
+  try {
+    return await prisma.user.findMany();
+  } catch (error) {
+    console.error('Error fetching all users:', error);
+    throw new Error('Failed to fetch all users');
+  }
+};
+
+export const banUser = async (adminId: string, id: string) => {
+  await checkAdmin(adminId);
+  try {
+    return await prisma.user.update({
+      where: { id: id },
+      data: {
+        banned: true,
+      },
+    });
+  } catch (error) {
+    console.error(`Error banning user with id ${id}:`, error);
+    throw new Error(`Failed to ban user with id ${id}`);
+  }
+};
+
+export const unbanUser = async (adminId: string, id: string) => {
+  await checkAdmin(adminId);
+  try {
+    return await prisma.user.update({
+      where: { id: id },
+      data: {
+        banned: false,
+      },
+    });
+  } catch (error) {
+    console.error(`Error unbanning user with id ${id}:`, error);
+    throw new Error(`Failed to unban user with id ${id}`);
+  }
 };
