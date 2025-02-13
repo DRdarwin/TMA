@@ -20,7 +20,6 @@ model User {
   transactions  FinancialTransaction[]
   notifications Notification[]
   settings      UserSettings?  @relation("UserSettings")
-  banned        Boolean  @default(false) // Добавьте это поле
 }
 
 model Flight {

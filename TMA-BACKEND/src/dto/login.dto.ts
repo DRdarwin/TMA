@@ -1,5 +1,13 @@
+// src/dto/login.dto.ts
+// src/dto/login.dto.ts
+import { IsString, IsNotEmpty } from 'class-validator';
+
 export class LoginDto {
-    username: string;
-    password: string;
-  }
-  
+    @IsString()
+    @IsNotEmpty()
+    username!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    password!: string;
+}  

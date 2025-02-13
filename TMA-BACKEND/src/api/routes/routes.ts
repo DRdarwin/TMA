@@ -1,13 +1,28 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { RoutesController } from '../../controllers/routesController.js';
+import asyncHandler from 'express-async-handler';
 
-const routes = Router();
+const router = Router();
 const controller = new RoutesController();
 
-routes.post('/', (req, res) => controller.createRoute(req, res));
-routes.get('/', (req, res) => controller.getRoutes(req, res));
-routes.get('/:id', (req, res) => controller.getRouteById(req, res));
-routes.put('/:id', (req, res) => controller.updateRoute(req, res));
-routes.delete('/:id', (req, res) => controller.deleteRoute(req, res));
+router.post('/routes', asyncHandler(async (req: Request, res: Response) => {
+    await controller.createRoutes(req, res); // ✅ Виклик createRoutes (МНОЖИНА)
+}));
 
-export default routes;
+router.get('/routes', asyncHandler(async (req: Request, res: Response) => {
+    await controller.getRoutes(req, res); // ✅ Виклик getRoutes (МНОЖИНА)
+}));
+
+router.get('/routes/:id', asyncHandler(async (req: Request<{ id: string }>, res: Response) => {
+    await controller.getRoutesById(req,res); // ✅ Виклик getRoutesById (МНОЖИНА)
+}));
+
+router.put('/routes/:id', asyncHandler(async (req: Request<{ id: string }>, res: Response) => {
+    await controller.updateRoutes(req,res); // ✅ Виклик updateRoutes (МНОЖИНА)
+}));
+
+router.delete('/routes/:id', asyncHandler(async (req: Request<{ id: string }>, res: Response) => {
+    await controller.deleteRoutes(req,res); // ✅ Виклик deleteRoutes (МНОЖИНА)
+}));
+
+export default router;

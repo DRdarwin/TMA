@@ -1,16 +1,18 @@
-import { Router } from "express";
-import * as AdminController from "../../controllers/adminController.js";
+import { Router } from 'express';
+class AdminController {
+    getAllUsers(req, res) {
+        res.send('Get all users');
+    }
+    banUser(req, res) {
+        res.send('Ban user');
+    }
+    unbanUser(req, res) {
+        res.send('Unban user');
+    }
+}
 const router = Router();
-// User management routes
-router.get("/users", AdminController.getAllUsers);
-router.post("/user/:telegramId/ban", AdminController.banUser);
-router.post("/user/:telegramId/unban", AdminController.unbanUser);
-// Flight management routes
-router.get("/flights", AdminController.getFlights);
-router.post("/flights", AdminController.createFlight);
-router.put("/flights/:id", AdminController.updateFlight);
-router.delete("/flights/:id", AdminController.deleteFlight);
-// Wallet management routes
-router.get("/wallets", AdminController.getWallets);
-router.put("/wallets/:id", AdminController.updateWallet);
+const adminController = new AdminController();
+router.get('/users', (req, res) => adminController.getAllUsers(req, res));
+router.post('/user/:telegramId/ban', (req, res) => adminController.banUser(req, res));
+router.post('/user/:telegramId/unban', (req, res) => adminController.unbanUser(req, res));
 export default router;

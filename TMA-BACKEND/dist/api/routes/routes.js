@@ -7,16 +7,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { Router } from "express";
-import { RouteController } from "../../controllers/routeController.js";
-import asyncHandler from "express-async-handler";
+import { Router } from 'express';
+import { RoutesController } from '../../controllers/routesController.js';
+import asyncHandler from 'express-async-handler';
 const router = Router();
-const controller = new RouteController();
-router.post("/routes", asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield controller.createRoute(req, res);
+const controller = new RoutesController();
+router.post('/routes', asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield controller.createRoutes(req, res); // ✅ Виклик createRoutes (МНОЖИНА)
 })));
-router.get("/routes", asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () { return yield controller.getRoutes(req, res); })));
-router.get("/routes/:id", asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () { return yield controller.getRouteById(req, res); })));
-router.put("/routes/:id", asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () { return yield controller.updateRoute(req, res); })));
-router.delete("/routes/:id", asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () { return yield controller.deleteRoute(req, res); })));
+router.get('/routes', asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield controller.getRoutes(req, res); // ✅ Виклик getRoutes (МНОЖИНА)
+})));
+router.get('/routes/:id', asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield controller.getRoutesById(req, res); // ✅ Виклик getRoutesById (МНОЖИНА)
+})));
+router.put('/routes/:id', asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield controller.updateRoutes(req, res); // ✅ Виклик updateRoutes (МНОЖИНА)
+})));
+router.delete('/routes/:id', asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield controller.deleteRoutes(req, res); // ✅ Виклик deleteRoutes (МНОЖИНА)
+})));
 export default router;
